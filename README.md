@@ -24,11 +24,7 @@ cosbyFlixx App is a vanilla JavaScript project that displays information about m
    ```bash
    cd cosbyFlixx-app
    ```
-3. Create a `.env` file in the root directory and add your TMDB API key:
-   ```env
-   API_KEY=your_tmdb_api_key
-   ```
-4. Open the `index.html` file in a browser to run the app.
+3. Open the `index.html` file in a browser to run the app.
 
 ## Usage
 
@@ -37,7 +33,21 @@ cosbyFlixx App is a vanilla JavaScript project that displays information about m
 
 ## API Key
 
-This project requires an API key from [The Movie Database (TMDB)](https://www.themoviedb.org/). Sign up for an account, navigate to the API section, and generate your API key. Add the key to the `.env` file as shown above.
+This project requires an API key from [The Movie Database (TMDB)](https://www.themoviedb.org/). Sign up for an account, navigate to the API section, and generate your API key. Add the key to the file as shown above.
+
+In this version, we used the Authorization header to pass the bearer token. as shown below.
+
+```javascript
+const options = {
+	method: 'GET',
+	headers: {
+		accept: 'application/json',
+		Authorization: 'Bearer YOUR_TOKEN',
+	},
+};
+```
+
+**Note**: For simplicity, the bearer token was used directly in the code. In a real-world application, it is recommended to store the API key in a secure way, such as a .env file or a server-side environment variable. Locate the script.js file and replace the bearer your token or you can change the style and use the API key.
 
 ## Contributions
 
