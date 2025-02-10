@@ -49,14 +49,6 @@ const options = {
 
 **Note**: For simplicity, the bearer token was used directly in the code. In a real-world application, it is recommended to store the API key in a secure way, such as a .env file or a server-side environment variable. Locate the script.js file and replace the bearer your token or you can change the style and use the API key.
 
-## Contributions
-
-Contributions are welcome! Please fork the repository, make your changes, and submit a pull request.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
-
 ## Acknowledgments
 
 - [The Movie Database (TMDB)](https://www.themoviedb.org/) for the API.
