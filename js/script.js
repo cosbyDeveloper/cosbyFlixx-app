@@ -16,18 +16,25 @@ document.addEventListener('DOMContentLoaded', () => {
 	const isGithubPages = location.hostname === 'cosbydeveloper.github.io';
 	const basePath = isGithubPages ? '/cosbyFlixx-app' : '';
 
+	// Fix <a href> links
 	document.querySelectorAll('a[href]').forEach((link) => {
 		let href = link.getAttribute('href');
-
-		// Skip external links (http, https, mailto, tel, #)
 		if (/^(https?:|mailto:|tel:|#)/i.test(href)) return;
 
-		// Normalize leading slash
 		if (href.startsWith('/')) href = href.slice(1);
-
-		// Only adjust links that aren't already prefixed
 		if (isGithubPages && !href.startsWith('cosbyFlixx-app')) {
 			link.setAttribute('href', `${basePath}/${href}`);
+		}
+	});
+
+	// Fix <form action>
+	document.querySelectorAll('form[action]').forEach((form) => {
+		let action = form.getAttribute('action');
+		if (/^(https?:|#)/i.test(action)) return;
+
+		if (action.startsWith('/')) action = action.slice(1);
+		if (isGithubPages && !action.startsWith('cosbyFlixx-app')) {
+			form.setAttribute('action', `${basePath}/${action}`);
 		}
 	});
 });
