@@ -599,20 +599,28 @@ function init() {
 	switch (global.currentPage) {
 		case '/':
 		case '/index.html':
+		case '/cosbyFlixx-app/':
+		case '/cosbyFlixx-app/index.html':
+		case 'https://cosbydeveloper.github.io/cosbyFlixx-app/':
 			displaySlider('movie/now_playing');
 			displayPopularMovies();
 			break;
 		case '/shows.html':
+		case '/cosbyFlixx-app/shows.html':
+		case 'https://cosbydeveloper.github.io/cosbyFlixx-app/shows.html':
 			displaySlider('tv/airing_today');
 			displayPopularShows();
 			break;
 		case '/movie-details.html':
+		case '/cosbyFlixx-app/movie-details.html':
 			displayMovieDetails();
 			break;
 		case '/tv-details.html':
+		case '/cosbyFlixx-app/tv-details.html':
 			displayTVShowDetails();
 			break;
 		case '/search.html':
+		case '/cosbyFlixx-app/search.html':
 			search();
 			break;
 	}
