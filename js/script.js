@@ -582,12 +582,14 @@ function init() {
 		case '/cosbyFlixx-app/':
 		case '/cosbyFlixx-app/index.html':
 		case 'https://cosbydeveloper.github.io/cosbyFlixx-app/':
+		case 'https://cosbydeveloper.github.io':
 			displaySlider('movie/now_playing');
 			displayPopularMovies();
 			break;
 		case '/shows.html':
 		case '/cosbyFlixx-app/shows.html':
 		case 'https://cosbydeveloper.github.io/cosbyFlixx-app/shows.html':
+		case 'https://cosbydeveloper.github.io/shows.html':
 			displaySlider('tv/airing_today');
 			displayPopularShows();
 			break;
