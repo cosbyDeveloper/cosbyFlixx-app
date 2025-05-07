@@ -1,5 +1,15 @@
 const global = {
 	currentPage: window.location.pathname,
+	search: {
+		term: '',
+		type: '',
+		page: 1,
+		totalPages: 1,
+		totalResults: 0,
+	},
+	apiUrl: 'https://api.themoviedb.org/3',
+	authorizationBearer:
+		'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5NTczYzI5OGUyNmEwMjk1NTIwNGE4NjM3NWRjYzFkYiIsIm5iZiI6MTczMzkyNjMyNy43OTEwMDAxLCJzdWIiOiI2NzU5OWRiN2RhM2JkMzliODc4NjBlYzYiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.xuMfuS5nHJFC9lDHoqMJKwA34LD9iiE3e-VrxEz0Sys',
 };
 
 // Add commas to a number
@@ -28,6 +38,18 @@ function hideSpinner() {
 	document.querySelector('.spinner').classList.remove('show');
 }
 
+// Show Alert
+function showAlert(message, className) {
+	const alertDiv = document.createElement('div');
+
+	alertDiv.classList.add('alert', className);
+	alertDiv.appendChild(document.createTextNode(message));
+
+	document.querySelector('#alert').appendChild(alertDiv);
+
+	setTimeout(() => alertDiv.remove(), 3000);
+}
+
 /**
  * Fetches data from The Movie Database API.
  *
@@ -40,16 +62,57 @@ async function fetchAPIData(endpoint) {
 		method: 'GET',
 		headers: {
 			accept: 'application/json',
-			Authorization: '',
+			Authorization: global.authorizationBearer,
 		},
 	};
 
 	showSpinner();
 
-	const API_URL = 'https://api.themoviedb.org/3';
+	const API_URL = global.apiUrl;
 
 	try {
 		const res = await fetch(`${API_URL}/${endpoint}?language=en-US`, options);
+
+		if (!res.ok) {
+			throw new Error(`HTTP error! status: ${res.status}`);
+		}
+
+		const data = await res.json();
+
+		hideSpinner();
+
+		return data;
+	} catch (error) {
+		throw error;
+	}
+}
+
+/*************  ✨ Codeium Command ⭐  *************/
+/**
+ * Searches for movies or TV shows using the search term provided by the user.
+ *
+ * @returns {Promise<Object>} A promise that resolves to the search results.
+ * @throws {Error} Throws an error if the HTTP response is not ok.
+ */
+/******  b36ecf79-a9b6-4bc0-acd6-56c6074c95c3  *******/
+async function searchAPIData() {
+	const options = {
+		method: 'GET',
+		headers: {
+			accept: 'application/json',
+			Authorization: global.authorizationBearer,
+		},
+	};
+
+	showSpinner();
+
+	const API_URL = global.apiUrl;
+
+	try {
+		const res = await fetch(
+			`${API_URL}/search/${global.search.type}?language=en-US&query=${global.search.term}&page=${global.search.page}`,
+			options,
+		);
 
 		if (!res.ok) {
 			throw new Error(`HTTP error! status: ${res.status}`);
@@ -109,7 +172,7 @@ async function displayPopularMovies() {
 	} catch (error) {
 		const errorDiv = document.querySelector('.fetch_error');
 		errorDiv.innerHTML =
-			'<h3><em>There was an error fetching popular movies</em></h3>';
+			'<h3><em>There was an error fetching popular movies, please try again</em></h3>';
 		console.log('Error fetching popular movies:', error);
 	}
 }
@@ -363,28 +426,32 @@ function initSwiper() {
 	});
 }
 
-async function displaySlider() {
-	const { results } = await fetchAPIData('movie/now_playing');
+async function displaySlider(endpoint) {
+	const { results } = await fetchAPIData(endpoint);
 
-	results.forEach((movie) => {
+	results.forEach((result) => {
 		const sliderDiv = document.createElement('div');
 		sliderDiv.classList.add('swiper-slide');
 
 		sliderDiv.innerHTML = `
-			<a href="movie-details.html?id=${movie.id}">
+			<a ${
+				endpoint === 'movie/now_playing'
+					? `href="movie-details.html?id=${result.id}"`
+					: `href="tv-details.html?id=${result.id}"`
+			}>
 			${
-				movie.poster_path
+				result.poster_path
 					? `<img
-				src="https://image.tmdb.org/t/p/w500${movie.poster_path}"
-				alt="${movie.title}" />`
+				src="https://image.tmdb.org/t/p/w500${result.poster_path}"
+				alt="${endpoint === 'movie/now_playing' ? result.title : result.name}" />`
 					: `<img
 				src="images/no-image.jpg"
-				alt="${movie.title}" />`
+				alt="${endpoint === 'movie/now_playing' ? result.title : result.name}" />`
 			}
 			</a>
 			<h4 class="swiper-rating">
 				<i class="fas fa-star text-primary"></i>
-							${movie.vote_average.toFixed(1)} / 10
+							${result.vote_average.toFixed(1)} / 10
 						</p>
 			</h4>
 		`;
@@ -395,15 +462,128 @@ async function displaySlider() {
 	});
 }
 
+function displayPagination() {
+	const paginationDiv = document.createElement('div');
+
+	paginationDiv.classList.add('pagination');
+	paginationDiv.innerHTML = `
+	<button class="btn btn-primary" id="prev">Prev</button>
+	<button class="btn btn-primary" id="next">Next</button>
+	<div class="page-counter">Page ${global.search.page} of ${global.search.totalPages}</div>
+	`;
+
+	document.querySelector('#pagination').appendChild(paginationDiv);
+
+	// Disable prev and next on first and last last page
+	if (global.search.page === 1) {
+		document.querySelector('#prev').disabled = true;
+	}
+	if (global.search.page === global.search.totalPages) {
+		document.querySelector('#next').disabled = true;
+	}
+
+	// Next Page
+	document.querySelector('#next').addEventListener('click', async () => {
+		global.search.page++;
+
+		const { results, total_pages } = await searchAPIData();
+		displaySearchResults(results);
+	});
+	// Previous Page
+	document.querySelector('#prev').addEventListener('click', async () => {
+		global.search.page--;
+
+		const { results, total_pages } = await searchAPIData();
+		displaySearchResults(results);
+	});
+}
+
+function displaySearchResults(results) {
+	// Clear previous results
+	document.querySelector('#search-results').innerHTML = '';
+	document.querySelector('#search-results-heading').innerHTML = '';
+	document.querySelector('#pagination').innerHTML = '';
+
+	results.forEach((result) => {
+		const movieDiv = document.createElement('div');
+
+		movieDiv.classList.add('card');
+
+		movieDiv.innerHTML = `
+			<a href="${global.search.type}-details.html?id=${result.id}">
+					${
+						result.poster_path
+							? `<img
+						src="https://image.tmdb.org/t/p/w500${result.poster_path}"
+						class="card-img-top"
+						alt="${global.search.type === 'movie' ? result.title : result.name}"
+					/>`
+							: `<img
+						src="images/no-image.jpg"
+						class="card-img-top"
+						alt="${global.search.type === 'movie' ? result.title : result.name}"
+					/>`
+					}
+				</a>
+				<div class="card-body">
+					<h5 class="card-title">${
+						global.search.type === 'movie' ? result.title : result.name
+					}</h5>
+					<p class="card-text">
+						<small class="text-muted">Release: ${
+							global.search.type === 'movie'
+								? result.release_date
+								: result.first_air_date
+						}</small>
+					</p>
+				</div>
+		`;
+
+		document.querySelector('#search-results-heading').innerHTML = `
+			<h2>${results.length} of ${global.search.totalResults} results for ${global.search.term}</h2>
+		`;
+		document.querySelector('#search-results').appendChild(movieDiv);
+	});
+
+	displayPagination();
+}
+
+async function search() {
+	const queryString = window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+
+	global.search.term = urlParams.get('search-term');
+	global.search.type = urlParams.get('type');
+
+	if (global.search.term !== '' && global.search.term !== null) {
+		const { results, total_pages, page, total_results } = await searchAPIData();
+
+		global.search.page = page;
+		global.search.totalPages = total_pages;
+		global.search.totalResults = total_results;
+
+		if (results.length === 0) {
+			showAlert('No results found', 'alert-error');
+		}
+
+		displaySearchResults(results);
+
+		document.querySelector('#search-term').value = '';
+	} else {
+		showAlert('Please enter search term', 'alert-error');
+	}
+}
+
 // Initialize App
 function init() {
 	switch (global.currentPage) {
 		case '/':
 		case '/index.html':
-			displaySlider();
+			displaySlider('movie/now_playing');
 			displayPopularMovies();
 			break;
 		case '/shows.html':
+			displaySlider('tv/airing_today');
 			displayPopularShows();
 			break;
 		case '/movie-details.html':
@@ -412,8 +592,9 @@ function init() {
 		case '/tv-details.html':
 			displayTVShowDetails();
 			break;
-		case 'search.html':
-			console.log('Search');
+		case '/search.html':
+			search();
+			break;
 	}
 
 	highlightActiveLink();

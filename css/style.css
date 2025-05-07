@@ -78,16 +78,16 @@ ul {
 	padding: 0 20px;
 }
 
+.main-header {
+	padding: 20px 0;
+	background: rgba(0, 0, 0, 0.8);
+}
+
 .main-header .container {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	padding: 0 20px;
-}
-
-.main-header {
-	padding: 20px 0;
-	background: rgba(0, 0, 0, 0.8);
 }
 
 .main-header .logo {
@@ -120,7 +120,6 @@ ul {
 	grid-gap: 20px;
 }
 
-/* Media Queries */
 @media (max-width: 760px) {
 	.grid {
 		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -182,9 +181,10 @@ ul {
 	color: var(--color-secondary);
 }
 
-/* Section: Now Playing */
+/* Section: Now Playing and Airing Today */
 
-section.now-playing {
+section.now-playing,
+section.airing-today {
 	padding: 60px;
 	background: url(../images/showcase-bg.jpg) no-repeat center center/cover;
 }
@@ -335,7 +335,6 @@ section h2 {
 
 /* Alert */
 .alert {
-	background: red;
 	padding: 10px 20px;
 	margin-bottom: 20px;
 	border-radius: 5px;
