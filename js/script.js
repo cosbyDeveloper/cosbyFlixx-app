@@ -12,6 +12,26 @@ const global = {
 		'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5NTczYzI5OGUyNmEwMjk1NTIwNGE4NjM3NWRjYzFkYiIsIm5iZiI6MTczMzkyNjMyNy43OTEwMDAxLCJzdWIiOiI2NzU5OWRiN2RhM2JkMzliODc4NjBlYzYiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.xuMfuS5nHJFC9lDHoqMJKwA34LD9iiE3e-VrxEz0Sys',
 };
 
+document.addEventListener('DOMContentLoaded', () => {
+	const isGithubPages = location.hostname === 'cosbydeveloper.github.io';
+	const basePath = isGithubPages ? '/cosbyFlixx-app' : '';
+
+	document.querySelectorAll('a[href]').forEach((link) => {
+		let href = link.getAttribute('href');
+
+		// Skip external links (http, https, mailto, tel, #)
+		if (/^(https?:|mailto:|tel:|#)/i.test(href)) return;
+
+		// Normalize leading slash
+		if (href.startsWith('/')) href = href.slice(1);
+
+		// Only adjust links that aren't already prefixed
+		if (isGithubPages && !href.startsWith('cosbyFlixx-app')) {
+			link.setAttribute('href', `${basePath}/${href}`);
+		}
+	});
+});
+
 // Add commas to a number
 function addCommasToNumber(x) {
 	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -373,7 +393,7 @@ async function displayTVShowDetails() {
 				<div class="details-bottom">
 					<h2>Show Info</h2>
 					<ul>
-						<li><span class="text-secondary">Number Of Episodes:</span> ${
+						<li><span class="text-secondar<ay">Number Of Episodes:</span> ${
 							show.number_of_episodes
 						} </li>
 						<li>
@@ -579,30 +599,20 @@ function init() {
 	switch (global.currentPage) {
 		case '/':
 		case '/index.html':
-		case '/cosbyFlixx-app/':
-		case '/cosbyFlixx-app/index.html':
-		case 'https://cosbydeveloper.github.io/cosbyFlixx-app/':
-		case 'https://cosbydeveloper.github.io':
 			displaySlider('movie/now_playing');
 			displayPopularMovies();
 			break;
 		case '/shows.html':
-		case '/cosbyFlixx-app/shows.html':
-		case 'https://cosbydeveloper.github.io/cosbyFlixx-app/shows.html':
-		case 'https://cosbydeveloper.github.io/shows.html':
 			displaySlider('tv/airing_today');
 			displayPopularShows();
 			break;
 		case '/movie-details.html':
-		case '/cosbyFlixx-app/movie-details.html':
 			displayMovieDetails();
 			break;
 		case '/tv-details.html':
-		case '/cosbyFlixx-app/tv-details.html':
 			displayTVShowDetails();
 			break;
 		case '/search.html':
-		case '/cosbyFlixx-app/search.html':
 			search();
 			break;
 	}
